@@ -5,21 +5,24 @@ export const esquemaCriarFuncionario = z.object({
         .string({ error: "O nome completo deve ser informado." })
         .trim()
         .min(3, "O nome completo deve conter pelo menos 3 caracteres.")
-        .max(150, "O nome completo deve conter no maximo 150 caracteres."),
+        .max(150, "O nome completo deve conter no maximo 150 caracteres.")
+        .describe("Nome completo do funcionário."),
 
     email_corporativo: z
         .email({ error: "Informe um e-mail corporativo valido." })
-        .max(255, "O e-mail corporativo deve conter no maximo 255 caracteres."),
+        .max(255, "O e-mail corporativo deve conter no maximo 255 caracteres.")
+        .describe("E-mail corporativo único."),
 
     matricula: z
         .string({ error: "A matricula deve ser informada." })
         .trim()
         .min(1, "A matricula nao pode estar vazia.")
-        .max(30, "A matricula deve conter no maximo 30 caracteres."),
+        .max(30, "A matricula deve conter no maximo 30 caracteres.")
+        .describe("Matrícula funcional."),
 
     data_admissao: z.iso.date({
         error: "Informe uma data de admissao valida no formato AAAA-MM-DD."
-    }),
+    }).describe("Data de admissão no formato AAAA-MM-DD."),
 
     tipo_contrato: z
         .string({ error: "O tipo de contrato deve ser informado." })
