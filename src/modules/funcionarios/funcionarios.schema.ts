@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+// Schemas são a fonte de verdade das regras de entrada: validam runtime,
+// inferem tipos TypeScript e alimentam a documentação OpenAPI.
+/** Campos aceitos na criação de um funcionário. */
 export const esquemaCriarFuncionario = z.object({
     nome_completo: z
         .string({ error: "O nome completo deve ser informado." })
@@ -61,12 +64,14 @@ export const esquemaCriarFuncionario = z.object({
         .nullish()
 });
 
+/** Parâmetros de rota usados por operações que recebem um UUID. */
 export const esquemaIdentificadorFuncionario = z.object({
     id: z.uuid({
         error: "O identificador do funcionario deve ser um UUID valido."
     })
 });
 
+/** Paginação compartilhada: página começa em 1 e limite varia de 1 a 100. */
 export const esquemaPaginacao = z.object({
     pagina: z.coerce
         .number<string>({
@@ -87,6 +92,7 @@ export const esquemaPaginacao = z.object({
         .default(10)
 });
 
+/** Filtros de busca; pelo menos um filtro textual ou id deve ser informado. */
 export const esquemaBuscarFuncionarios = esquemaPaginacao
     .extend({
         id: z.uuid({
@@ -125,6 +131,7 @@ export const esquemaBuscarFuncionarios = esquemaPaginacao
         }
     );
 
+/** Body do PATCH: campos opcionais, mas pelo menos um deve ser enviado. */
 export const esquemaAtualizarFuncionario = esquemaCriarFuncionario
     .partial()
     .extend({
@@ -142,6 +149,7 @@ export const esquemaAtualizarFuncionario = esquemaCriarFuncionario
         }
     );
 
+/** Body do PUT: representação completa, com campos nullable explícitos. */
 export const esquemaSubstituirFuncionario = esquemaCriarFuncionario
     .extend({
         situacao: z.enum(

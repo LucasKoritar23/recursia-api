@@ -18,11 +18,18 @@ import {
     substituirFuncionarioServico
 } from "./funcionarios.service.js";
 
-
+/**
+ * Valida o body, cria um funcionário e traduz conflitos de unicidade para HTTP 409.
+ * @param requisicao Requisição Fastify com o body do novo funcionário.
+ * @param resposta Resposta Fastify usada para enviar status e JSON.
+ * @returns Funcionário criado (201) ou erro de validação/conflito.
+ * @throws Erros de infraestrutura não tratados localmente.
+ */
 export async function criarFuncionarioControlador(
     requisicao: FastifyRequest,
     resposta: FastifyReply
 ) {
+    // safeParse evita lançar exceção: o resultado indica sucesso ou lista de issues.
     const validacao = esquemaCriarFuncionario.safeParse(
         requisicao.body
     );
@@ -86,6 +93,13 @@ export async function criarFuncionarioControlador(
     }
 }
 
+/**
+ * Valida o UUID, remove o registro e trata ausência ou violação de FK.
+ * @param requisicao Requisição com `params.id`.
+ * @param resposta Resposta Fastify.
+ * @returns Resposta 204, 404, 409 ou 400 conforme o resultado.
+ * @throws Erros de infraestrutura não tratados localmente.
+ */
 export async function excluirFuncionarioControlador(
     requisicao: FastifyRequest,
     resposta: FastifyReply
@@ -133,6 +147,12 @@ export async function excluirFuncionarioControlador(
     }
 }
 
+/**
+ * Valida filtros combináveis, delega a busca paginada e retorna seus dados.
+ * @param requisicao Requisição com filtros em `query`.
+ * @param resposta Resposta Fastify.
+ * @returns Página de funcionários ou erro 400.
+ */
 export async function buscarFuncionariosControlador(
     requisicao: FastifyRequest,
     resposta: FastifyReply
@@ -158,6 +178,12 @@ export async function buscarFuncionariosControlador(
     return resposta.status(200).send(resultado);
 }
 
+/**
+ * Valida paginação e delega a listagem sem filtros.
+ * @param requisicao Requisição com `pagina` e `limite` na query.
+ * @param resposta Resposta Fastify.
+ * @returns Página de funcionários ou erro 400.
+ */
 export async function listarFuncionariosControlador(
     requisicao: FastifyRequest,
     resposta: FastifyReply
@@ -183,6 +209,13 @@ export async function listarFuncionariosControlador(
     return resposta.status(200).send(resultado);
 }
 
+/**
+ * Executa atualização parcial após validar UUID e body não vazio.
+ * @param requisicao Requisição com `params.id` e campos parciais no body.
+ * @param resposta Resposta Fastify.
+ * @returns Funcionário atualizado ou erro de validação, ausência ou conflito.
+ * @throws Erros de infraestrutura não tratados localmente.
+ */
 export async function atualizarFuncionarioControlador(
     requisicao: FastifyRequest,
     resposta: FastifyReply
@@ -260,6 +293,13 @@ export async function atualizarFuncionarioControlador(
     }
 }
 
+/**
+ * Executa substituição completa após validar UUID e todos os campos do body.
+ * @param requisicao Requisição com `params.id` e representação completa.
+ * @param resposta Resposta Fastify.
+ * @returns Funcionário substituído ou erro de validação, ausência ou conflito.
+ * @throws Erros de infraestrutura não tratados localmente.
+ */
 export async function substituirFuncionarioControlador(
     requisicao: FastifyRequest,
     resposta: FastifyReply

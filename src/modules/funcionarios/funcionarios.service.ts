@@ -15,18 +15,27 @@ import {
     substituirFuncionarioRepositorio
 } from "./funcionarios.repository.js";
 
+/** Encaminha a criação para o repository, mantendo a regra de negócio isolada da HTTP. */
 export async function criarFuncionarioServico(
     dados: CriarFuncionario
 ) {
     return criarFuncionarioRepositorio(dados);
 }
 
+/** Remove um funcionário e informa se uma linha foi afetada. */
 export async function excluirFuncionarioServico(
     id: string
 ) {
     return excluirFuncionarioRepositorio(id);
 }
 
+/**
+ * Monta o envelope comum das consultas paginadas.
+ * @param dados Registros da página atual.
+ * @param totalRegistros Quantidade total após aplicar filtros.
+ * @param paginacao Página e limite usados na consulta.
+ * @returns Dados e metadados para o cliente navegar pelas páginas.
+ */
 function montarRespostaPaginada(
     dados: unknown[],
     totalRegistros: number,
@@ -50,6 +59,7 @@ function montarRespostaPaginada(
     };
 }
 
+/** Lista funcionários sem filtros e calcula os metadados de paginação. */
 export async function listarFuncionariosServico(
     paginacao: Paginacao
 ) {
@@ -64,6 +74,7 @@ export async function listarFuncionariosServico(
     );
 }
 
+/** Busca funcionários com filtros e paginação. */
 export async function buscarFuncionariosServico(
     filtros: FiltrosBuscarFuncionarios
 ) {
@@ -78,6 +89,7 @@ export async function buscarFuncionariosServico(
     );
 }
 
+/** Encaminha uma atualização parcial ao repository. */
 export async function atualizarFuncionarioServico(
     id: string,
     dados: AtualizarFuncionario
@@ -85,6 +97,7 @@ export async function atualizarFuncionarioServico(
     return atualizarFuncionarioRepositorio(id, dados);
 }
 
+/** Encaminha uma substituição completa ao repository. */
 export async function substituirFuncionarioServico(
     id: string,
     dados: SubstituirFuncionario

@@ -14,6 +14,7 @@ type FiltrosConsulta = Partial<
     >
 >;
 
+/** Insere um funcionário usando query parametrizada e retorna a linha criada. */
 export async function criarFuncionarioRepositorio(
     dados: CriarFuncionario
 ) {
@@ -34,6 +35,7 @@ export async function criarFuncionarioRepositorio(
     RETURNING *
   `;
 
+    // Os placeholders ($1...$10) separam SQL de dados e evitam interpolação insegura.
     const valores = [
         dados.nome_completo,
         dados.email_corporativo,
@@ -52,6 +54,7 @@ export async function criarFuncionarioRepositorio(
     return resultado.rows[0];
 }
 
+/** Exclui por UUID e retorna true somente quando uma linha foi removida. */
 export async function excluirFuncionarioRepositorio(
     id: string
 ) {
@@ -69,6 +72,7 @@ async function consultarFuncionariosPaginados(
     paginacao: Paginacao,
     filtros: FiltrosConsulta = {}
 ) {
+    // Condições e valores são montados separadamente para manter a query parametrizada.
     const condicoes: string[] = [];
     const valores: string[] = [];
 
@@ -102,6 +106,7 @@ async function consultarFuncionariosPaginados(
     ${onde}
   `;
 
+    // A contagem é feita separadamente para calcular total_paginas.
     const resultadoTotal = await banco.query(
         consultaTotal,
         valores
@@ -126,6 +131,7 @@ async function consultarFuncionariosPaginados(
     OFFSET $${indiceDeslocamento}
   `;
 
+    // LIMIT/OFFSET implementam a paginação após a ordenação estável.
     const resultadoDados = await banco.query(
         consultaDados,
         [...valores, paginacao.limite, deslocamento]
@@ -137,12 +143,14 @@ async function consultarFuncionariosPaginados(
     };
 }
 
+/** Consulta a página sem filtros. */
 export async function listarFuncionariosRepositorio(
     paginacao: Paginacao
 ) {
     return consultarFuncionariosPaginados(paginacao);
 }
 
+/** Consulta a página aplicando todos os filtros informados com AND. */
 export async function buscarFuncionariosRepositorio(
     filtros: FiltrosBuscarFuncionarios
 ) {
@@ -155,6 +163,7 @@ export async function buscarFuncionariosRepositorio(
     );
 }
 
+/** Atualiza apenas colunas presentes no body e retorna o registro atualizado. */
 export async function atualizarFuncionarioRepositorio(
     id: string,
     dados: AtualizarFuncionario
@@ -172,6 +181,7 @@ export async function atualizarFuncionarioRepositorio(
         "gestor_id"
     ] as const;
 
+    // A lista fixa impede que chaves arbitrárias do body virem SQL executável.
     const campos = camposPermitidos.filter(
         (campo) => dados[campo] !== undefined
     );
@@ -199,6 +209,7 @@ export async function atualizarFuncionarioRepositorio(
     return resultado.rows[0] ?? null;
 }
 
+/** Substitui todas as colunas editáveis pelo conteúdo completo recebido. */
 export async function substituirFuncionarioRepositorio(
     id: string,
     dados: SubstituirFuncionario
