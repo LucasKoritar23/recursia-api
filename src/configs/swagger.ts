@@ -1,30 +1,17 @@
 import type { FastifyInstance } from "fastify";
 import fastifySwagger from "@fastify/swagger";
-import fastifySwaggerUI from "@fastify/swagger-ui";
 import { jsonSchemaTransform } from "fastify-type-provider-zod";
 
 /**
- * Registra o contrato OpenAPI e a interface Swagger UI na aplicação.
+ * Registra a especificação OpenAPI e, opcionalmente,
+ * a interface Swagger UI.
  *
- * `jsonSchemaTransform` converte schemas Zod das rotas em JSON Schema,
- * permitindo que validação e documentação partam da mesma fonte.
- *
- * @param aplicacao Instância Fastify que receberá os plugins.
- * @returns Promise concluída após o registro dos plugins.
+ * O Swagger UI pode ser desabilitado por variável de
+ * ambiente para diagnosticar problemas no runtime.
  */
 export async function configurarSwagger(
     aplicacao: FastifyInstance
-) {
-    /**
-     * Registra o contrato OpenAPI e a interface Swagger UI na aplicação.
-     *
-     * O `jsonSchemaTransform` converte schemas Zod declarados nas rotas em
-     * JSON Schema, permitindo que a validação e a documentação partam da
-     * mesma definição.
-     *
-     * @param aplicacao Instância Fastify que receberá os plugins.
-     * @returns Promise concluída após o registro dos plugins.
-     */
+): Promise<void> {
     await aplicacao.register(fastifySwagger, {
         openapi: {
             openapi: "3.0.3",
@@ -34,7 +21,6 @@ export async function configurarSwagger(
                     "API para gerenciamento de funcionarios, departamentos, cargos e estrutura organizacional.",
                 version: "1.0.0"
             },
-            // An empty URL uses the current origin in Swagger UI, including production.
             servers: [{ url: "/" }],
             tags: [
                 {
@@ -49,6 +35,16 @@ export async function configurarSwagger(
         },
         transform: jsonSchemaTransform
     });
+
+    // Evita carregar @fastify/swagger-ui quando desabilitado.
+    if (process.env.SWAGGER_UI_HABILITADO === "false") {
+        aplicacao.log.info("Swagger UI desabilitado para diagnostico.");
+        return;
+    }
+
+    // Importação dinâmica: carrega o plugin somente quando necessário.
+    const { default: fastifySwaggerUI } =
+        await import("@fastify/swagger-ui");
 
     await aplicacao.register(fastifySwaggerUI, {
         routePrefix: "/documentacao",
