@@ -35,7 +35,7 @@ export async function configurarSwagger(
                 version: "1.0.0"
             },
             // An empty URL uses the current origin in Swagger UI, including production.
-            servers: [{ url: "" }],
+            servers: [{ url: "/" }],
             tags: [
                 {
                     name: "Funcionarios",
