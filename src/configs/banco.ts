@@ -13,7 +13,7 @@ const { Pool } = pg;
  * nova para cada requisição. Os módulos de repository usam `banco.query()`.
  */
 export const banco = new Pool({
-    ...(process.env.DATABASE_URL
+    ...(process.env.VERCEL && process.env.DATABASE_URL
         ? { connectionString: process.env.DATABASE_URL }
         : {
               host: process.env.BANCO_HOST,
