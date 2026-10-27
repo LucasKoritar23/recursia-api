@@ -34,12 +34,8 @@ export async function configurarSwagger(
                     "API para gerenciamento de funcionarios, departamentos, cargos e estrutura organizacional.",
                 version: "1.0.0"
             },
-            servers: [
-                {
-                    url: "http://127.0.0.1:3000",
-                    description: "Ambiente local"
-                }
-            ],
+            // An empty URL uses the current origin in Swagger UI, including production.
+            servers: [{ url: "" }],
             tags: [
                 {
                     name: "Funcionarios",
